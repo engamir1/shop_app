@@ -3,8 +3,6 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
-
-
 router.get(`/`, async (req, res) => {
   const userList = await User.find();
 
@@ -13,7 +11,7 @@ router.get(`/`, async (req, res) => {
   }
   res.send(userList);
 });
-// all users showing name and email without id 
+// all users showing name and email without id
 router.get("/list", async (req, res) => {
   const singleUser = await User.find({}).select("name phone email -_id");
   if (!singleUser) {
@@ -64,23 +62,26 @@ router.get("/secure/:id", async (req, res) => {
 });
 router.put("/edit/:id", async (req, res) => {
   let id = req.params.id;
-  // console.log(req.body);
   let newpassword;
-  if (!req.body.passwordHash) {
-    const user = await User.findById(req.params.id);
+
+  let getuser = await User.findById(req.params.id);
+
+  if (req.body.passwordHash) {
     // console.log(req.params.id);
-    newpassword = user.passwordHash;
-    // console.log(newpassword);
+    console.log(req.body.passwordHash);
+    newpassword = bcrypt.hashSync(req.body.passwordHash, 10);
+    console.log(newpassword);
   } else {
-    newpassword = req.body.passwordHash;
+    newpassword = getuser.passwordHash;
+    console.log(newpassword);
   }
-  console.log(newpassword);
+
   const user = await User.findByIdAndUpdate(
     id,
     {
       name: req.body.name,
       email: req.body.email,
-      passwordHash: bcrypt.hashSync(newpassword, 10),
+      passwordHash: newpassword,
       phone: req.body.phone,
       isAdmin: req.body.isAdmin,
       street: req.body.street,
@@ -96,7 +97,7 @@ router.put("/edit/:id", async (req, res) => {
     res.status(400).send("cant register user ");
   }
 
-  res.send({ user });
+  res.send({ user: user.passwordHash, other: getuser.passwordHash });
 });
 
 module.exports = router;
