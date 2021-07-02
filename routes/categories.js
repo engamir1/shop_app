@@ -1,7 +1,8 @@
 const { Category } = require("../models/category");
 const express = require("express");
 const router = express.Router();
-
+// ------------------------------------------------------------------
+// get all categories 
 router.get(`/`, async (req, res) => {
   const categoryList = await Category.find();
 
@@ -10,7 +11,8 @@ router.get(`/`, async (req, res) => {
   }
   res.send(categoryList);
 });
-// ---------------------------------------------------
+// ------------------------------------------------------------------
+// make new category
 router.post("/", async (req, res) => {
   const categoryList = await Category.find();
   const { name, icon, color } = req.body;
@@ -26,16 +28,17 @@ router.post("/", async (req, res) => {
   }
   res.send(`${categoryList}`);
 });
-// ----------------------------------------------------------------
+// ------------------------------------------------------------------
+// get category by id 
 router.get("/:id", async (req, res) => {
   const category = req.params.id;
   const singleCategory = await Category.findById(category);
   if (!singleCategory) {
     return res.status(404).send("the category is not here ");
   }
-
   res.status(200).send(singleCategory);
 });
+// ------------------------------------------------------------------
 // ------------- edit in category
 router.put("/:id", async (req, res) => {
   const category_id = req.params.id;
@@ -47,13 +50,13 @@ router.put("/:id", async (req, res) => {
   if (!singleCategory) {
     return res.status(404).send("the category is not here ");
   }
-
   res.status(200).send(singleCategory);
 });
 // ----------------------------------------------------------------
 // delete category
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
+   //   ------------------ first way using async await ------
   // Category.findByIdAndRemove(id) == Category.findByIdAndDelete(id)
   //   const category = await Category.findByIdAndRemove(id);
   //   if (category) {
@@ -82,7 +85,6 @@ router.delete("/:id", async (req, res) => {
     .catch((err) => {
       return res.status(400).json({ success: false, err: err });
     });
-
   //   res.send("{sucess : scucess} - u deleteed category ");
 });
 module.exports = router;

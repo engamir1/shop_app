@@ -3,17 +3,16 @@ const express = require("express");
 const { Category } = require("../models/category");
 const router = express.Router();
 const mongoose = require("mongoose");
-
+// ------------------------------------------------------------------
 // get all products
 router.get(`/`, async (req, res) => {
   const productList = await Product.find();
-
   if (!productList) {
     res.status(500).json({ success: false });
   }
   res.send(productList);
 });
-
+// ------------------------------------------------------------------
 // get single product by id
 router.get(`/details/:id`, async (req, res) => {
   //   console.log(req.params);
@@ -25,24 +24,23 @@ router.get(`/details/:id`, async (req, res) => {
   const singleProduct = await Product.findById(req.params.id).populate(
     "category"
   );
-
   if (!singleProduct) {
     res.status(500).json({ success: false });
   }
   res.send(singleProduct);
 });
+// ------------------------------------------------------------------
 // get all product by id and show only name and images
 router.get("/list", async (req, res) => {
   //   console.log(req.params);
   //   -_id  if u want to remove _id from showing
   const productList = await Product.find({}).select("name image  -_id ");
-
   if (!productList) {
     res.status(500).json({ success: false });
   }
   res.send(productList);
 });
-
+// ------------------------------------------------------------------
 // add new product
 router.post(`/`, async (req, res) => {
   const category = await Category.findById(req.body.category);
@@ -62,7 +60,6 @@ router.post(`/`, async (req, res) => {
     numReviews: req.body.numReviews,
     isFeatured: req.body.isFeatured,
   });
-
   product
     .save()
     .then((createdProduct) => {
@@ -75,7 +72,7 @@ router.post(`/`, async (req, res) => {
       });
     });
 });
-
+// ------------------------------------------------------------------
 // edit product
 // ------------- edit in category
 router.put("/:id/edit", async (req, res) => {
@@ -107,7 +104,7 @@ router.put("/:id/edit", async (req, res) => {
 
   res.status(200).send(singleProduct);
 });
-
+// ------------------------------------------------------------------
 // get product count so i can use in ststics  الاحصاء
 router.get("/get/count", async (req, res) => {
   const countProducts = await Product.countDocuments((count) => {
@@ -118,6 +115,7 @@ router.get("/get/count", async (req, res) => {
   }
   res.status(201).json({ countedProducts: countProducts });
 });
+// ------------------------------------------------------------------
 // get featured products
 router.get("/featured/:num", async (req, res) => {
   // make limit for returned featured product
@@ -136,16 +134,14 @@ router.get("/featured/:num", async (req, res) => {
   }
   res.send(`${productList}`);
 });
+// ------------------------------------------------------------------
 // get products by categories
 router.get("/get", async (req, res) => {
   //   console.log(req.query.category);
-
   console.log(req.query.category);
-
   const productList = await Product.find({
     category: req.query.category,
   }).populate("category");
-
   if (!productList) {
     res.status(500).json({ success: false });
   }
